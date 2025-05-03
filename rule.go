@@ -18,10 +18,10 @@ import (
 	"encoding/binary"
 	"fmt"
 
-	"github.com/google/nftables/binaryutil"
-	"github.com/google/nftables/expr"
-	"github.com/google/nftables/internal/parseexprfunc"
 	"github.com/mdlayher/netlink"
+	"github.com/metacubex/nftables/binaryutil"
+	"github.com/metacubex/nftables/expr"
+	"github.com/metacubex/nftables/internal/parseexprfunc"
 	"golang.org/x/sys/unix"
 )
 

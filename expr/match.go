@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"encoding/binary"
 
-	"github.com/google/nftables/binaryutil"
-	"github.com/google/nftables/xt"
 	"github.com/mdlayher/netlink"
+	"github.com/metacubex/nftables/binaryutil"
+	"github.com/metacubex/nftables/xt"
 	"golang.org/x/sys/unix"
 )
 

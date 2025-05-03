@@ -8,9 +8,9 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/google/nftables"
-	"github.com/google/nftables/expr"
-	"github.com/google/nftables/internal/nftest"
+	"github.com/metacubex/nftables"
+	"github.com/metacubex/nftables/expr"
+	"github.com/metacubex/nftables/internal/nftest"
 )
 
 func ExampleNewMonitor() {

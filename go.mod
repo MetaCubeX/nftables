@@ -1,4 +1,4 @@
-module github.com/google/nftables
+module github.com/metacubex/nftables
 
 go 1.20
 

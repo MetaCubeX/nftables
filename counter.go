@@ -15,8 +15,8 @@
 package nftables
 
 import (
-	"github.com/google/nftables/binaryutil"
 	"github.com/mdlayher/netlink"
+	"github.com/metacubex/nftables/binaryutil"
 	"golang.org/x/sys/unix"
 )
 
