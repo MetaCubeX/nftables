@@ -1,7 +1,7 @@
 package xt
 
 import (
-	"github.com/google/nftables/alignedbuff"
+	"github.com/metacubex/nftables/alignedbuff"
 )
 
 // Tcp is the Match.Info payload for the tcp xtables extension

@@ -18,7 +18,7 @@ import (
 	"encoding/binary"
 	"net"
 
-	"github.com/google/nftables/binaryutil"
+	"github.com/metacubex/nftables/binaryutil"
 	"golang.org/x/sys/unix"
 )
 

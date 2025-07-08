@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/google/nftables/binaryutil"
+	"github.com/metacubex/nftables/binaryutil"
 	"github.com/mdlayher/netlink"
 	"golang.org/x/sys/unix"
 )

@@ -21,10 +21,10 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/nftables"
-	"github.com/google/nftables/binaryutil"
-	"github.com/google/nftables/expr"
-	"github.com/google/nftables/internal/nftest"
+	"github.com/metacubex/nftables"
+	"github.com/metacubex/nftables/binaryutil"
+	"github.com/metacubex/nftables/expr"
+	"github.com/metacubex/nftables/internal/nftest"
 	"github.com/vishvananda/netlink"
 )
 

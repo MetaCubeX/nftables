@@ -15,7 +15,7 @@
 package nftables
 
 import (
-	"github.com/google/nftables/expr"
+	"github.com/metacubex/nftables/expr"
 	"github.com/mdlayher/netlink"
 	"golang.org/x/sys/unix"
 )

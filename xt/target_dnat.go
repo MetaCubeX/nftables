@@ -3,7 +3,7 @@ package xt
 import (
 	"net"
 
-	"github.com/google/nftables/alignedbuff"
+	"github.com/metacubex/nftables/alignedbuff"
 )
 
 type NatRangeFlags uint

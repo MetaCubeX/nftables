@@ -21,9 +21,9 @@ import (
 	"os/exec"
 	"testing"
 
-	"github.com/google/nftables"
-	"github.com/google/nftables/internal/nftest"
-	"github.com/google/nftables/userdata"
+	"github.com/metacubex/nftables"
+	"github.com/metacubex/nftables/internal/nftest"
+	"github.com/metacubex/nftables/userdata"
 )
 
 var enableSysTests = flag.Bool("run_system_tests", false, "Run tests that operate against the live kernel")
