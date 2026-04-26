@@ -21,11 +21,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mdlayher/netlink"
 	"github.com/metacubex/nftables/binaryutil"
 	"github.com/metacubex/nftables/expr"
 	"github.com/metacubex/nftables/internal/parseexprfunc"
 	"github.com/metacubex/nftables/userdata"
-	"github.com/mdlayher/netlink"
 	"golang.org/x/sys/unix"
 )
 
