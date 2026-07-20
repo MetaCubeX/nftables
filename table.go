@@ -86,7 +86,7 @@ func (cc *Conn) addTable(t *Table, flag netlink.HeaderFlags) *Table {
 // AddTable adds the specified Table, just like `nft add table ...`.
 // See also https://wiki.nftables.org/wiki-nftables/index.php/Configuring_tables
 func (cc *Conn) AddTable(t *Table) *Table {
-	return cc.addTable(t, netlink.Create)
+	return cc.addTable(t, nftCreateFlag)
 }
 
 // CreateTable create the specified Table if it do not existed.

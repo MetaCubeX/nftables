@@ -19,8 +19,8 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/mdlayher/netlink"
 	"github.com/metacubex/nftables/binaryutil"
+	"github.com/mdlayher/netlink"
 	"golang.org/x/sys/unix"
 )
 
@@ -115,6 +115,23 @@ func (cc *Conn) AddChain(c *Chain) *Chain {
 		{Type: unix.NFTA_CHAIN_NAME, Data: []byte(c.Name + "\x00")},
 	})
 
+	// Kernel 6.12+ validates NFTA_CHAIN_TYPE and NFTA_CHAIN_POLICY
+	// before NFTA_CHAIN_HOOK. Emit them in order matching nft CLI.
+	if c.Type != "" {
+		data = append(data, cc.marshalAttr([]netlink.Attribute{
+			{Type: unix.NFTA_CHAIN_TYPE, Data: []byte(c.Type + "\x00")},
+		})...)
+	}
+	policy := c.Policy
+	if policy == nil && c.Hooknum != nil && c.Type != "" {
+		defaultPolicy := ChainPolicyAccept
+		policy = &defaultPolicy
+	}
+	if policy != nil {
+		data = append(data, cc.marshalAttr([]netlink.Attribute{
+			{Type: unix.NFTA_CHAIN_POLICY, Data: binaryutil.BigEndian.PutUint32(uint32(*policy))},
+		})...)
+	}
 	if c.Hooknum != nil && c.Priority != nil {
 		hookAttr := []netlink.Attribute{
 			{Type: unix.NFTA_HOOK_HOOKNUM, Data: binaryutil.BigEndian.PutUint32(uint32(*c.Hooknum))},
@@ -129,21 +146,10 @@ func (cc *Conn) AddChain(c *Chain) *Chain {
 			{Type: unix.NLA_F_NESTED | unix.NFTA_CHAIN_HOOK, Data: cc.marshalAttr(hookAttr)},
 		})...)
 	}
-
-	if c.Policy != nil {
-		data = append(data, cc.marshalAttr([]netlink.Attribute{
-			{Type: unix.NFTA_CHAIN_POLICY, Data: binaryutil.BigEndian.PutUint32(uint32(*c.Policy))},
-		})...)
-	}
-	if c.Type != "" {
-		data = append(data, cc.marshalAttr([]netlink.Attribute{
-			{Type: unix.NFTA_CHAIN_TYPE, Data: []byte(c.Type + "\x00")},
-		})...)
-	}
 	cc.messages = append(cc.messages, netlink.Message{
 		Header: netlink.Header{
 			Type:  netlink.HeaderType((unix.NFNL_SUBSYS_NFTABLES << 8) | unix.NFT_MSG_NEWCHAIN),
-			Flags: netlink.Request | netlink.Acknowledge | netlink.Create,
+			Flags: netlink.Request | netlink.Acknowledge | nftCreateFlag,
 		},
 		Data: append(extraHeader(uint8(c.Table.Family), 0), data...),
 	})

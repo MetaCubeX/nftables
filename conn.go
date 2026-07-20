@@ -27,6 +27,11 @@ import (
 	"golang.org/x/sys/unix"
 )
 
+// nftCreateFlag is the correct NLM_F_CREATE value (0x200).
+// mdlayher/netlink incorrectly defines Create = 0x400 (= NLM_F_ECHO),
+// causing EINVAL on kernel 6.12+.
+const nftCreateFlag netlink.HeaderFlags = 0x200
+
 // A Conn represents a netlink connection of the nftables family.
 //
 // All methods return their input, so that variables can be defined from string
@@ -277,7 +282,7 @@ func (cc *Conn) FlushRuleset() {
 	cc.messages = append(cc.messages, netlink.Message{
 		Header: netlink.Header{
 			Type:  netlink.HeaderType((unix.NFNL_SUBSYS_NFTABLES << 8) | unix.NFT_MSG_DELTABLE),
-			Flags: netlink.Request | netlink.Acknowledge | netlink.Create,
+			Flags: netlink.Request | netlink.Acknowledge | nftCreateFlag,
 		},
 		Data: extraHeader(0, 0),
 	})

@@ -375,7 +375,7 @@ func (cc *Conn) SetAddElements(s *Set, vals []SetElement) error {
 	cc.messages = append(cc.messages, netlink.Message{
 		Header: netlink.Header{
 			Type:  netlink.HeaderType((unix.NFNL_SUBSYS_NFTABLES << 8) | unix.NFT_MSG_NEWSETELEM),
-			Flags: netlink.Request | netlink.Acknowledge | netlink.Create,
+			Flags: netlink.Request | netlink.Acknowledge | nftCreateFlag,
 		},
 		Data: append(extraHeader(uint8(s.Table.Family), 0), cc.marshalAttr(elements)...),
 	})
@@ -609,7 +609,7 @@ func (cc *Conn) AddSet(s *Set, vals []SetElement) (err error) {
 	cc.messages = append(cc.messages, netlink.Message{
 		Header: netlink.Header{
 			Type:  netlink.HeaderType((unix.NFNL_SUBSYS_NFTABLES << 8) | unix.NFT_MSG_NEWSET),
-			Flags: netlink.Request | netlink.Acknowledge | netlink.Create,
+			Flags: netlink.Request | netlink.Acknowledge | nftCreateFlag,
 		},
 		Data: append(extraHeader(uint8(s.Table.Family), 0), cc.marshalAttr(tableInfo)...),
 	})
@@ -662,7 +662,7 @@ func (cc *Conn) SetDeleteElements(s *Set, vals []SetElement) error {
 	cc.messages = append(cc.messages, netlink.Message{
 		Header: netlink.Header{
 			Type:  netlink.HeaderType((unix.NFNL_SUBSYS_NFTABLES << 8) | unix.NFT_MSG_DELSETELEM),
-			Flags: netlink.Request | netlink.Acknowledge | netlink.Create,
+			Flags: netlink.Request | netlink.Acknowledge | nftCreateFlag,
 		},
 		Data: append(extraHeader(uint8(s.Table.Family), 0), cc.marshalAttr(elements)...),
 	})
