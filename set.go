@@ -475,9 +475,13 @@ func (s *Set) makeElemList(vals []SetElement, id uint32) ([]netlink.Attribute, e
 }
 
 // AddSet adds the specified Set.
-func (cc *Conn) AddSet(s *Set, vals []SetElement) error {
+//
+// On Linux kernel 6.12+, when vals is non-empty, the set creation (NEWSET)
+// and element addition (NEWSETELEM) must be committed in separate batches.
+// This method calls Flush after NEWSET before adding elements so callers
+// don't need to change existing code.
+func (cc *Conn) AddSet(s *Set, vals []SetElement) (err error) {
 	cc.mu.Lock()
-	defer cc.mu.Unlock()
 	// Based on nft implementation & linux source.
 	// Link: https://github.com/torvalds/linux/blob/49a57857aeea06ca831043acbb0fa5e0f50602fd/net/netfilter/nf_tables_api.c#L3395
 	// Another reference: https://git.netfilter.org/nftables/tree/src
@@ -611,22 +615,19 @@ func (cc *Conn) AddSet(s *Set, vals []SetElement) error {
 	})
 
 	// Set the values of the set if initial values were provided.
+	// NOTE: NEWSET and NEWSETELEM must be committed in separate batches
+	// on kernel 6.12+. Release lock to flush NEWSET, then call
+	// SetAddElements (which acquires its own lock) for the elements.
+	cc.mu.Unlock()
 	if len(vals) > 0 {
-		hdrType := unix.NFT_MSG_NEWSETELEM
-		elements, err := s.makeElemList(vals, s.ID)
-		if err != nil {
+		if err := cc.Flush(); err != nil {
+			cc.mu.Lock()
 			return err
 		}
-		cc.messages = append(cc.messages, netlink.Message{
-			Header: netlink.Header{
-				Type:  netlink.HeaderType((unix.NFNL_SUBSYS_NFTABLES << 8) | hdrType),
-				Flags: netlink.Request | netlink.Acknowledge | netlink.Create,
-			},
-			Data: append(extraHeader(uint8(s.Table.Family), 0), cc.marshalAttr(elements)...),
-		})
+		cc.mu.Lock()
+		return cc.SetAddElements(s, vals)
 	}
-
-	return nil
+	return cc.Flush()
 }
 
 // DelSet deletes a specific set, along with all elements it contains.
