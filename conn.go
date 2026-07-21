@@ -27,10 +27,10 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-// nftCreateFlag is the correct NLM_F_CREATE value (0x200).
-// mdlayher/netlink incorrectly defines Create = 0x400 (= NLM_F_ECHO),
-// causing EINVAL on kernel 6.12+.
-const nftCreateFlag netlink.HeaderFlags = 0x200
+// nftCreateFlag is NLM_F_CREATE (0x400). Kernel's NLM_F_CREATE = 0x400.
+// mdlayher/netlink's Create is 0x400 and is the correct value.
+// Do NOT use 0x200 here -- that's NLM_F_EXCL and causes ENOENT.
+const nftCreateFlag = netlink.Create
 
 // A Conn represents a netlink connection of the nftables family.
 //
@@ -257,18 +257,18 @@ func (cc *Conn) Flush() error {
 
 	var errs error
 	// Fetch the requested acknowledgement for each message we sent.
-	for _, msg := range cc.messages {
+	for i, msg := range cc.messages {
 		if _, err := receiveAckAware(conn, msg.Header.Flags); err != nil {
 			if errors.Is(err, os.ErrPermission) {
 				// Kernel will only send one permission error to user space.
 				return err
 			}
-			errs = errors.Join(errs, err)
+			errs = errors.Join(errs, fmt.Errorf("#%d: %w", i, err))
 		}
 	}
 
 	if errs != nil {
-		return fmt.Errorf("conn.Receive: %w", errs)
+		return fmt.Errorf("auto redirect: msg count=%d errs=%w", len(cc.messages), errs)
 	}
 
 	return nil
